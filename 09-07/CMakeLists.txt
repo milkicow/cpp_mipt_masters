@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(quicksort LANGUAGES CXX)
+project(pimpl LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -17,5 +17,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
+add_library(${PROJECT_NAME} STATIC lib/${PROJECT_NAME}.cpp)
+target_sources(${PROJECT_NAME} PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS include
+    FILES include/${PROJECT_NAME}.hpp
+)
+
 add_subdirectory(tests)
-add_subdirectory(lib)
