@@ -3,17 +3,14 @@
 #include <boost/noncopyable.hpp>
 #include <cstddef>
 
+class Implementation;
+
 class Entity : private boost::noncopyable {
    public:
     Entity();
     Entity(Entity&& other);
     Entity& operator=(Entity&& other);
     ~Entity();
-
-    int test() const;
-
-   private:
-    class Implementation;
 
    public:
     Implementation* get() noexcept;
