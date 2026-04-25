@@ -1,42 +1,17 @@
 #include "pimpl.hpp"
 
 #include <bit>
-#include <iostream>
 #include <memory>
 #include <new>
 #include <utility>
 
-class Entity::Implementation {
-   public:
-    explicit Implementation(int value) : m_value(value) {
-        std::cout << "[Implementation] constructed, value = " << m_value << '\n';
-    }
+#include "impl.hpp"
 
-    Implementation(Implementation&& other) noexcept : m_value(std::exchange(other.m_value, 0)) {
-        std::cout << "[Implementation] move-constructed\n";
-    }
-
-    Implementation& operator=(Implementation&& other) noexcept {
-        if (this != &other) m_value = std::exchange(other.m_value, 0);
-        return *this;
-    }
-
-    ~Implementation() { std::cout << "[Implementation] destroyed, value = " << m_value << '\n'; }
-
-    auto test() const {
-        std::cout << "[Implementation] test(), value = " << m_value << '\n';
-        return m_value;
-    }
-
-   private:
-    int m_value = 0;
-};
-
-Entity::Implementation* Entity::get() noexcept {
+Implementation* Entity::get() noexcept {
     return std::launder(std::bit_cast<Implementation*>(m_buffer.data()));
 }
 
-const Entity::Implementation* Entity::get() const noexcept {
+const Implementation* Entity::get() const noexcept {
     return std::launder(std::bit_cast<const Implementation*>(m_buffer.data()));
 }
 
@@ -57,8 +32,9 @@ Entity::Entity(Entity&& other) {
 Entity::~Entity() { std::destroy_at(get()); }
 
 Entity& Entity::operator=(Entity&& other) {
-    if (this != &other) *get() = std::move(*other.get());
+    if (this != &other) {
+        std::destroy_at(get());
+        ::new (m_buffer.data()) Implementation(std::move(*other.get()));
+    }
     return *this;
 }
-
-int Entity::test() const { return get()->test(); }

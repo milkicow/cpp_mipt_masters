@@ -21,7 +21,9 @@ add_library(${PROJECT_NAME} STATIC lib/${PROJECT_NAME}.cpp)
 target_sources(${PROJECT_NAME} PUBLIC
     FILE_SET HEADERS
     BASE_DIRS include
-    FILES include/${PROJECT_NAME}.hpp
+    FILES
+        include/pimpl.hpp
+        include/impl.hpp
 )
 
 add_subdirectory(tests)
